@@ -35,8 +35,10 @@ public:
   //numero de hoteis extras(fora inicial e final)
   int h;
 
+  int totalH;
+
   //numero de viagens
-  int d;
+  int D;
 
   //tempo total de viagem
   int Tmax;
@@ -53,8 +55,6 @@ public:
   //vetor de score por cliente
   vector<int>Si;
 
-  //retornar a matriz de distancias
-  //mostra solucao
-  
-  //funcao que retorna uma solucao gulosa apartir do ponto de melhor custo por beneficio
+  //modelo matematico
+  void modeloMatematico();
 };
