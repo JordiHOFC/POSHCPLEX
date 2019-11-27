@@ -69,17 +69,17 @@ POSH::POSH(string &nomeArq)
             
         }
     }
-    /*for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         cout<<endl;
         for (int j = 0; j < n; j++)
         {
-            cout<<matrizDist[i][j]<<" ";
+            //cout<<matrizDist[i][j]<<" ";
             distanciatotal+=matrizDist[i][j];
     
         }
     }
-    */
+    cout<<endl<<"Distancia Total: "<<distanciatotal<<endl;
     IloEnv env;
 	IloModel modelo;
     // iniciando o modelo
@@ -98,13 +98,12 @@ POSH::POSH(string &nomeArq)
     //DECLARANDO VARIAVEL DE DECISAO UI
     IloNumVarArray U(env,n,1,n,ILOINT);
     for(int i=0;i<n;i++){
-        cout<<U[i]<<"TAMANHO DE N:    "<<n<<endl;
        modelo.add(U[i]); 
     }
     
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
-            for(int d=0;d<D;d++)
+            for(int d=0;d<D;d++){
                 if(i!=j)
                 {
                     x[i][j][d]=IloNumVar(env,0,1,ILOBOOL);
@@ -113,7 +112,7 @@ POSH::POSH(string &nomeArq)
                 {
                     x[i][j][d]=IloNumVar(env,0,0,ILOBOOL);
                 }
-                
+            }  
         }
     }
     
@@ -139,9 +138,9 @@ POSH::POSH(string &nomeArq)
    //restrição 1 (2.2) ////////////////////////////////////////////////////////////////////////////////////////////////
     IloExpr soma(env);
     for(int l=1;l<n;l++){
-       if(l>H+2){
+       //if(l>H+2){
         soma+=x[0][l][0];
-       }
+       //}
     }
     IloRange viagemH0(env,1,soma,1);
     modelo.add(viagemH0);
@@ -150,9 +149,9 @@ POSH::POSH(string &nomeArq)
     //restrição 2 (2.3) ////////////////////////////////////////////////////////////////////////////////////////////////
     IloExpr soma1(env);
     for(int k=0;k<n;k++){
-        if(k>H+2){
+       // if(k>H+2){
             soma1+=x[k][1][D-1];      
-       }
+      // }
     }
     IloRange viagemH1(env,1,soma1,1);
     modelo.add(viagemH1);
@@ -163,7 +162,7 @@ POSH::POSH(string &nomeArq)
         IloExpr somaH(env);
         for(int h=0;h<H+2;h++){
             for(int l=0;l<n;l++){
-                if(l>H+2)
+               
                     somaH+=x[h][l][d];
  
             }
@@ -178,7 +177,7 @@ POSH::POSH(string &nomeArq)
         for(int h=0;h<H+2;h++){
             for(int k=0;k<n;k++){
             
-                if(k>H+2)
+
                     somaH2+=x[k][h][d];
  
             }
@@ -195,14 +194,12 @@ POSH::POSH(string &nomeArq)
              IloExpr somaMesmoHotel1(env);
              IloExpr somaMesmoHotel2(env);
              for(int k=0;k<n;k++){
-                if(k>H+2){
-                    somaMesmoHotel1+=x[k][h][d];
-                }
+
+                somaMesmoHotel1+=x[k][h][d];
+
              }
-                for(int l=0;l<n;l++){
-                if(l>H+2){
+            for(int l=0;l<n;l++){
                     somaMesmoHotel2+=x[h][l][d+1];
-                }
              }
              IloRange mesmoHotel(env,0,somaMesmoHotel1-somaMesmoHotel2,0);
              modelo.add(mesmoHotel);
@@ -216,14 +213,11 @@ POSH::POSH(string &nomeArq)
              IloExpr somaConectividade1(env);
              IloExpr somaConectividade2(env);
              for(int i=0;i<n;i++){
-                if(k>H+2 && i>H+2){
-                    somaConectividade1+=x[i][k][d];                    
-                }
+                somaConectividade1+=x[i][k][d];                    
+                
              }
-             for(int j=0;j<n;j++){ 
-                if(k>H+2 && j>H+2){                
-                    somaConectividade2+=x[k][j][d];
-                }
+             for(int j=0;j<n;j++){             
+                somaConectividade2+=x[k][j][d];
              }
              IloRange conectividadeUnica(env,0,somaConectividade1-somaConectividade2,0);
              modelo.add(conectividadeUnica);
@@ -236,25 +230,25 @@ POSH::POSH(string &nomeArq)
         for(int d=0;d<D;d++){
             for(int j=0;j<n;j++){
             
-                 if(i>H+2 && j>H+2){
-                    visitaUnica+=x[i][j][d];
+                visitaUnica+=x[i][j][d];
                     
-                 }
+                 
             }
         }
         IloRange visitaUnicaa(env,0,visitaUnica,1);
         modelo.add(visitaUnicaa);
-        
+        //modelo.add(visitaUnica<=1);
+       
     }
 
     //restrição 8 (2.9) ////////////////////////////////////////////////////////////////////////////////////////////////
     for(int d=0;d<D;d++){
         IloExpr rest9(env);
-        for(int i=1;i<n;i++){
+        for(int i=0;i<n;i++){
             for(int j=0;j<n;j++){
-                //if(i>H+2 && j> H+2){
-                    rest9+=matrizDist[i][j]*x[i][j][d];
-              // }
+                
+                rest9+=matrizDist[i][j]*x[i][j][d];
+               
                 
             }
         }
@@ -267,20 +261,10 @@ POSH::POSH(string &nomeArq)
    
     for(int i=H+3;i<n;i++){
         for(int j=H+3;j<n;j++){
-            IloExpr somaUi(env);
-            IloExpr somaUj(env);
             IloExpr somaXijd(env);
-            /*for(int u=H+3;u<n;u++){
-                somaUi+=U[u];
-            }
-            for(int u=H+3;u<n;u++){
-                somaUj+=U[u];
-            }*/
             for(int d=0;d<D;d++){
                 somaXijd+=x[i][j][d];
             }
-             
-            //IloRange posicaoNaSolucao(env,esquerda,direita);
             modelo.add((U[i]-U[j]+1)<=((n-1)*(1-somaXijd)));
         }
     }
@@ -307,7 +291,7 @@ POSH::POSH(string &nomeArq)
     
     
     printf("\n\n fo: %lf\n",fit);
-    for(int j=0;j<n;j++){
+    for(int j=H+3;j<n;j++){
        int num=cplex.getValue(U[j]);         
     printf("%d  ",num);
     }
