@@ -33,7 +33,7 @@ public:
   int n;
 
   //numero de hoteis extras(fora inicial e final)
-  int h;
+  int H;
 
   int totalH;
 
